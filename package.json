@@ -1,0 +1,16 @@
+{
+  "name": "araxa",
+  "version": "1.0.0",
+  "description": "Araxa C2PA Registry",
+  "main": "simple-server.js",
+  "scripts": {
+    "start": "node simple-server.js",
+    "dev": "node simple-server.js"
+  },
+  "dependencies": {
+    "fastify": "^5.4.0",
+    "@fastify/cors": "^11.0.1"
+  },
+  "author": "",
+  "license": "ISC"
+} 

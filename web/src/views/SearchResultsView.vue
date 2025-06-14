@@ -7,7 +7,7 @@
           v-model="searchQuery"
           @keyup.enter="search"
           type="text"
-          placeholder="Search by hash, public ID, or file name..."
+          placeholder="Search by name or source URL..."
           class="search-input"
         />
         <button @click="search" class="search-btn">Search</button>
@@ -18,23 +18,21 @@
         <table class="results-table">
           <thead>
             <tr>
-              <th>PUBLIC ID</th>
-              <th>HASH (PARTIAL)</th>
-              <th>CREATOR ID</th>
-              <th>REGISTERED ON</th>
+              <th>NAME</th>
+              <th>SOURCE URL</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in paginatedResults" :key="item.hash">
+            <tr v-for="item in paginatedResults" :key="item.publicId">
               <td>
-                <router-link :to="`/content/${item.publicId}`" class="content-link">{{ item.publicId }}</router-link>
+                <router-link :to="`/content/${item.publicId}`" class="content-link">{{ item.name }}</router-link>
               </td>
-              <td>{{ item.hash.slice(0, 12) + '...' }}</td>
-              <td>{{ item.creatorId }}</td>
-              <td>{{ item.registeredOn }}</td>
+              <td>
+                <a :href="item.sourceUrl" target="_blank" class="source-link">{{ item.sourceUrl }}</a>
+              </td>
             </tr>
             <tr v-if="paginatedResults.length === 0">
-              <td colspan="4" class="no-results">No results found.</td>
+              <td colspan="2" class="no-results">No results found.</td>
             </tr>
           </tbody>
         </table>
@@ -54,16 +52,14 @@ import { defineComponent, ref, computed } from 'vue'
 
 interface SearchResult {
   publicId: string;
-  hash: string;
-  creatorId: string;
-  registeredOn: string;
+  name: string;
+  sourceUrl: string;
 }
 
 const MOCK_RESULTS: SearchResult[] = Array.from({ length: 23 }, (_, i) => ({
-  publicId: `photo-${i + 1}`,
-  hash: `mockhash${i + 1}`.padEnd(64, 'a'),
-  creatorId: `user${(i % 5) + 1}`,
-  registeredOn: new Date(Date.now() - i * 86400000).toLocaleString(),
+  publicId: `content-${i + 1}`,
+  name: `Creative Photo ${i + 1}`,
+  sourceUrl: `https://example.com/content/${i + 1}`,
 }))
 
 export default defineComponent({
@@ -77,9 +73,8 @@ export default defineComponent({
     const filteredResults = computed(() => {
       if (!searchQuery.value) return results.value
       return results.value.filter(item =>
-        item.publicId.includes(searchQuery.value) ||
-        item.hash.includes(searchQuery.value) ||
-        item.creatorId.includes(searchQuery.value)
+        item.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        item.sourceUrl.toLowerCase().includes(searchQuery.value.toLowerCase())
       )
     })
 
@@ -216,6 +211,19 @@ export default defineComponent({
 
 .content-link:hover {
   color: #369870;
+  text-decoration: underline;
+}
+
+.source-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.3s ease;
+  word-break: break-all;
+}
+
+.source-link:hover {
+  color: #42b983;
   text-decoration: underline;
 }
 
