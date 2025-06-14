@@ -1,30 +1,80 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col items-center py-8">
-    <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-8">
-      <button @click="$router.back()" class="mb-4 text-indigo-600 hover:underline text-sm">&larr; Back</button>
-      <h1 class="text-2xl font-bold text-indigo-700 mb-4 text-center">Content Details</h1>
+  <div class="min-h-screen bg-gray-100 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="mb-6">
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">Metadata</h2>
-        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
-          <p class="mb-1"><span class="font-medium">Public ID:</span> {{ content.publicId }}</p>
-          <p class="mb-1"><span class="font-medium">Hash:</span> {{ content.hash }}</p>
-          <p class="mb-1"><span class="font-medium">Creator ID:</span> {{ content.creatorId }}</p>
-          <p class="mb-1"><span class="font-medium">Registered On:</span> {{ content.registeredOn }}</p>
-          <p class="mb-1"><span class="font-medium">File Name:</span> {{ content.fileName }}</p>
-          <p class="mb-1"><span class="font-medium">File Type:</span> {{ content.fileType }}</p>
-          <p class="mb-1"><span class="font-medium">Extracted Metadata:</span> {{ content.extractedMetadata }}</p>
+        <button @click="$router.back()" class="mb-4 text-indigo-600 hover:underline text-sm flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back
+        </button>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Content Details</h1>
+        <p class="text-gray-600">Comprehensive information about registered content</p>
+      </div>
+      
+      <!-- Enhanced Metadata Display -->
+      <div class="mb-8">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            Content Metadata
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Basic Information -->
+            <div class="space-y-4">
+              <h3 class="font-semibold text-gray-700 text-lg">Basic Information</h3>
+              <dl class="space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">Public ID:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm font-mono break-all mt-1 sm:mt-0">{{ content.publicId }}</dd>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">Hash:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm font-mono break-all mt-1 sm:mt-0">{{ content.hash }}</dd>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">Creator ID:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm mt-1 sm:mt-0">{{ content.creatorId }}</dd>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">Registered:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm mt-1 sm:mt-0">{{ content.registeredOn }}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- File Information -->
+            <div class="space-y-4">
+              <h3 class="font-semibold text-gray-700 text-lg">File Information</h3>
+              <dl class="space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">File Name:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm mt-1 sm:mt-0">{{ content.fileName }}</dd>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">File Type:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm mt-1 sm:mt-0">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {{ content.fileType }}
+                    </span>
+                  </dd>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-start">
+                  <dt class="font-medium text-gray-600 sm:w-1/3 text-sm">Metadata:</dt>
+                  <dd class="text-gray-900 sm:w-2/3 text-sm mt-1 sm:mt-0">{{ content.extractedMetadata }}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
         </div>
       </div>
-      <div>
-        <h2 class="text-lg font-semibold text-gray-700 mb-2">Provenance Chain</h2>
-        <div class="bg-gray-50 border border-gray-200 rounded-md p-4">
-          <ol class="list-decimal ml-6">
-            <li v-for="(event, idx) in provenanceChain" :key="idx" class="mb-2">
-              <span class="font-medium">{{ event.date }}:</span> {{ event.description }}
-            </li>
-          </ol>
-          <div v-if="provenanceChain.length === 0" class="text-gray-400">No provenance events found.</div>
-        </div>
+      
+      <!-- Provenance Chain Component -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <ProvenanceChain :content-id="content.publicId" />
       </div>
     </div>
   </div>
@@ -33,14 +83,18 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import ProvenanceChain from '../components/verification/ProvenanceChain.vue'
 
 export default defineComponent({
   name: 'ContentDetailsView',
+  components: {
+    ProvenanceChain
+  },
   setup() {
     const route = useRoute()
     // Mock data for demonstration
     const content = ref({
-      publicId: route.params.id || 'photo-1',
+      publicId: (Array.isArray(route.params.id) ? route.params.id[0] : route.params.id) || 'photo-1',
       hash: 'mockhash1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       creatorId: 'user1',
       registeredOn: new Date().toLocaleString(),
@@ -48,14 +102,9 @@ export default defineComponent({
       fileType: 'image/jpeg',
       extractedMetadata: 'Camera: Canon EOS, ISO: 100, ...',
     })
-    const provenanceChain = ref([
-      { date: '2024-06-14 10:00', description: 'Content registered by user1.' },
-      { date: '2024-06-15 09:30', description: 'Metadata updated by user1.' },
-      { date: '2024-06-16 14:20', description: 'Ownership transferred to user2.' },
-    ])
+    
     return {
-      content,
-      provenanceChain
+      content
     }
   }
 })
