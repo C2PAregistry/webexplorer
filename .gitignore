@@ -1,5 +1,5 @@
 node_modules
 dist
-signed/*.c2pa
-signed/*.pdf
+server/signed/*.c2pa
+server/signed/*.pdf
 .DS_Store
