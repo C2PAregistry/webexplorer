@@ -3,13 +3,8 @@
     <h1>Search Results</h1>
     <div class="search-section">
       <div class="search-container">
-        <input
-          v-model="searchQuery"
-          @keyup.enter="search"
-          type="text"
-          placeholder="Search by name or source URL..."
-          class="search-input"
-        />
+        <input v-model="searchQuery" @keyup.enter="search" type="text" placeholder="Search by name or source URL..."
+          class="search-input" />
         <button @click="search" class="search-btn">Search</button>
       </div>
     </div>
@@ -26,7 +21,8 @@
           <tbody>
             <tr v-for="item in paginatedResults" :key="item.publicId">
               <td>
-                <img v-if="previewSrc(item)" :src="previewSrc(item)" alt="preview" class="thumb" @error="($event.target as HTMLImageElement).style.display='none'" />
+                <img v-if="previewSrc(item)" :src="previewSrc(item)!" alt="preview" class="thumb"
+                  @error="($event.target as HTMLImageElement).style.display = 'none'" />
               </td>
               <td>
                 <router-link :to="`/content/${item.publicId}`" class="content-link">{{ item.name }}</router-link>
@@ -41,7 +37,7 @@
           </tbody>
         </table>
       </div>
-      
+
       <div class="pagination" v-if="totalPages > 1">
         <button @click="prevPage" :disabled="page === 1" class="pagination-btn">Prev</button>
         <span class="page-info">Page {{ page }} of {{ totalPages }}</span>
@@ -320,26 +316,26 @@ export default defineComponent({
   .search-results {
     padding: 1rem;
   }
-  
+
   .search-results h1 {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
-  
+
   .search-container {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .search-btn {
     padding: 0.75rem;
   }
-  
+
   .pagination {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .pagination-btn {
     width: 100%;
     max-width: 120px;
@@ -352,4 +348,4 @@ export default defineComponent({
   object-fit: cover;
   border-radius: 4px;
 }
-</style> 
+</style>

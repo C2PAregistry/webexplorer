@@ -22,25 +22,15 @@
             Upload Content File (Image/Video/PDF)
             <span class="help-text">Max size: Images 50MB, Videos 100MB, PDFs 20MB</span>
           </label>
-          <input 
-            ref="fileInput"
-            type="file" 
-            @change="handleFileUpload" 
-            accept="image/*,video/*,application/pdf"
-          />
+          <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*,video/*,application/pdf" />
         </div>
         <div class="form-group">
           <label>
             Public Identifier
             <span class="help-text">3-50 characters, letters, numbers, hyphens only</span>
           </label>
-          <input 
-            type="text" 
-            v-model="publicIdentifier" 
-            @input="validatePublicIdentifier"
-            placeholder="my-content-id"
-            maxlength="50"
-          />
+          <input type="text" v-model="publicIdentifier" @input="validatePublicIdentifier" placeholder="my-content-id"
+            maxlength="50" />
           <div v-if="publicIdentifierError" class="error-text">
             {{ publicIdentifierError }}
           </div>
@@ -70,56 +60,39 @@
           </div>
           <span class="progress-percentage">{{ Math.round(progressPercentage) }}%</span>
         </div>
-        
+
         <!-- Progress Bar -->
         <div class="progress-bar-container">
-          <div 
-            class="progress-bar"
-            :style="{ width: progressPercentage + '%' }"
-          ></div>
+          <div class="progress-bar" :style="{ width: progressPercentage + '%' }"></div>
         </div>
-        
+
         <!-- Current Step -->
         <div class="current-step">
           <span class="step-counter">{{ currentStep }}/{{ totalSteps }}:</span>
           <span class="step-message">{{ processingMessage }}</span>
         </div>
-          
+
         <!-- Steps Progress -->
         <div class="steps-progress">
-          <div 
-            v-for="(step, index) in processingSteps" 
-            :key="step.name"
-            class="step-item"
-            :class="{
-              'completed': step.completed,
-              'active': step.active && !step.completed,
-              'pending': !step.active && !step.completed
-            }"
-          >
+          <div v-for="(step, _) in processingSteps" :key="step.name" class="step-item" :class="{
+            'completed': step.completed,
+            'active': step.active && !step.completed,
+            'pending': !step.active && !step.completed
+          }">
             <div class="step-content">
-              <div 
-                v-if="step.completed" 
-                class="step-icon completed-icon"
-              >✓</div>
-              <div 
-                v-else-if="step.active"
-                class="step-icon active-icon"
-              ></div>
-              <div 
-                v-else
-                class="step-icon pending-icon"
-              ></div>
+              <div v-if="step.completed" class="step-icon completed-icon">✓</div>
+              <div v-else-if="step.active" class="step-icon active-icon"></div>
+              <div v-else class="step-icon pending-icon"></div>
               <span class="step-name">{{ step.name }}</span>
             </div>
           </div>
         </div>
-          
+
         <!-- Time Estimation -->
         <div v-if="timeRemaining && timeRemaining > 0" class="time-remaining">
           <span>Estimated time remaining: {{ formatTimeRemaining(timeRemaining) }}</span>
         </div>
-        
+
         <!-- File Processing Info -->
         <div class="processing-info">
           <div>Processing: {{ fileInfo?.name || 'Unknown file' }}</div>
@@ -148,10 +121,7 @@
           <span>{{ error }}</span>
         </li>
       </ul>
-      <button 
-        @click="clearErrors"
-        class="clear-errors-btn"
-      >
+      <button @click="clearErrors" class="clear-errors-btn">
         Clear errors and try again
       </button>
     </div>
@@ -164,7 +134,7 @@
           <span class="data-label">Content Hash (SHA-256):</span>
           <p class="hash-value">{{ contentHash || 'N/A' }}</p>
         </div>
-        
+
         <!-- C2PA Information -->
         <div class="data-item">
           <span class="data-label">C2PA Content Authenticity:</span>
@@ -177,7 +147,7 @@
               <span class="status-icon">✗</span>
               <span class="status-text">Invalid C2PA Certificate</span>
             </div>
-              
+
             <div class="c2pa-details">
               <div v-if="c2paData.producer" class="detail-row">
                 <span class="detail-label">Producer:</span>
@@ -222,14 +192,10 @@
           </div>
           <p v-else class="no-metadata">N/A (no metadata found or not an image)</p>
         </div>
-        </div>
       </div>
+    </div>
 
-    <button 
-      @click="registerContent" 
-      :disabled="!canRegister"
-      class="register-btn"
-    >
+    <button @click="registerContent" :disabled="!canRegister" class="register-btn">
       {{ getButtonText() }}
     </button>
 
@@ -302,11 +268,11 @@ const FILE_SIZE_LIMITS = {
 // Allowed MIME types
 const ALLOWED_MIME_TYPES = {
   image: [
-    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 
+    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
     'image/bmp', 'image/tiff', 'image/svg+xml', 'image/heic', 'image/heif'
   ],
   video: [
-    'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 
+    'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv',
     'video/webm', 'video/mkv', 'video/m4v', 'video/3gp', 'video/quicktime'
   ],
   pdf: ['application/pdf']
@@ -348,16 +314,16 @@ export default defineComponent({
     ])
 
     const canRegister = computed(() => {
-      return publicIdentifier.value && 
-             contentHash.value && 
-             !isProcessing.value && 
-             errors.value.length === 0 &&
-             !publicIdentifierError.value
+      return publicIdentifier.value &&
+        contentHash.value &&
+        !isProcessing.value &&
+        errors.value.length === 0 &&
+        !publicIdentifierError.value
     })
 
     const validatePublicIdentifier = () => {
       const value = publicIdentifier.value.trim()
-      
+
       if (!value) {
         publicIdentifierError.value = ''
         return
@@ -383,7 +349,7 @@ export default defineComponent({
 
     const getFileCategory = (mimeType: string): keyof typeof FILE_SIZE_LIMITS | null => {
       if (ALLOWED_MIME_TYPES.image.some(type => type === mimeType)) return 'image'
-      if (ALLOWED_MIME_TYPES.video.some(type => type === mimeType)) return 'video'  
+      if (ALLOWED_MIME_TYPES.video.some(type => type === mimeType)) return 'video'
       if (ALLOWED_MIME_TYPES.pdf.some(type => type === mimeType)) return 'pdf'
       return null
     }
@@ -446,10 +412,10 @@ export default defineComponent({
         validationWarnings.push('This file was last modified more than 10 years ago. Please verify it\'s the correct file.')
       }
 
-      return { 
-        valid: validationErrors.length === 0, 
-        errors: validationErrors, 
-        warnings: validationWarnings 
+      return {
+        valid: validationErrors.length === 0,
+        errors: validationErrors,
+        warnings: validationWarnings
       }
     }
 
@@ -482,14 +448,14 @@ export default defineComponent({
         if (file.type === 'application/pdf') {
           const arrayBuffer = await file.arrayBuffer()
           const uint8Array = new Uint8Array(arrayBuffer)
-          
+
           // Check PDF header
           const pdfHeader = '%PDF-'
           const header = new TextDecoder().decode(uint8Array.slice(0, 5))
           if (header !== pdfHeader) {
             integrityErrors.push('PDF file appears to be corrupted (invalid header)')
           }
-          
+
           // Check for PDF footer
           const footer = new TextDecoder().decode(uint8Array.slice(-10))
           if (!footer.includes('%%EOF')) {
@@ -586,22 +552,22 @@ export default defineComponent({
       // Estimate processing time based on file size and type
       const sizeMB = file.size / (1024 * 1024)
       let baseTime = 2 // Base time in seconds
-      
+
       // Add time based on file size
       if (sizeMB > 10) {
         baseTime += (sizeMB - 10) * 0.5 // Extra 0.5s per MB over 10MB
       }
-      
+
       // Add extra time for video files (more complex processing)
       if (file.type.startsWith('video/')) {
         baseTime += sizeMB * 0.3
       }
-      
+
       // Add extra time for large images
       if (file.type.startsWith('image/') && sizeMB > 5) {
         baseTime += sizeMB * 0.2
       }
-      
+
       return Math.max(baseTime, 3) // Minimum 3 seconds
     }
 
@@ -635,7 +601,7 @@ export default defineComponent({
 
         // Filter and format the metadata for display
         const filteredMetadata: Record<string, any> = {}
-        
+
         // Common EXIF fields
         const commonFields = [
           'Make', 'Model', 'DateTime', 'DateTimeOriginal', 'CreateDate',
@@ -657,8 +623,8 @@ export default defineComponent({
 
         // IPTC data
         if (metadata.Keywords) {
-          filteredMetadata['Keywords'] = Array.isArray(metadata.Keywords) 
-            ? metadata.Keywords.join(', ') 
+          filteredMetadata['Keywords'] = Array.isArray(metadata.Keywords)
+            ? metadata.Keywords.join(', ')
             : metadata.Keywords
         }
 
@@ -685,28 +651,28 @@ export default defineComponent({
         // 
         // For demonstration purposes, we simulate checking for certain file properties
         // that might indicate C2PA data presence
-        
+
         const arrayBuffer = await file.arrayBuffer()
         const uint8Array = new Uint8Array(arrayBuffer)
-        
+
         // Simple heuristic: Look for potential C2PA markers in file
         // Real implementation would use the proper C2PA SDK
         const fileString = new TextDecoder('utf-8', { fatal: false }).decode(uint8Array.slice(0, Math.min(1024, arrayBuffer.byteLength)))
-        
+
         // Look for common C2PA/CAI signatures in the file
-        const hasC2PAMarkers = fileString.includes('c2pa') || 
-                               fileString.includes('contentauth') ||
-                               fileString.includes('CAI') ||
-                               uint8Array.some((_, index) => {
-                                 if (index < uint8Array.length - 4) {
-                                   // Look for JUMBF box signature (common in C2PA)
-                                   return uint8Array[index] === 0x6A && 
-                                          uint8Array[index + 1] === 0x75 && 
-                                          uint8Array[index + 2] === 0x6D && 
-                                          uint8Array[index + 3] === 0x62
-                                 }
-                                 return false
-                               })
+        const hasC2PAMarkers = fileString.includes('c2pa') ||
+          fileString.includes('contentauth') ||
+          fileString.includes('CAI') ||
+          uint8Array.some((_, index) => {
+            if (index < uint8Array.length - 4) {
+              // Look for JUMBF box signature (common in C2PA)
+              return uint8Array[index] === 0x6A &&
+                uint8Array[index + 1] === 0x75 &&
+                uint8Array[index + 2] === 0x6D &&
+                uint8Array[index + 3] === 0x62
+            }
+            return false
+          })
 
         if (hasC2PAMarkers) {
           // Simulated C2PA data for demonstration
@@ -721,7 +687,7 @@ export default defineComponent({
         }
 
         return null // No C2PA data detected
-        
+
       } catch (error) {
         console.warn('C2PA validation error (this is expected in the current implementation):', error)
         return null
@@ -772,7 +738,7 @@ export default defineComponent({
         // Step 1: Validate file (20% completion)
         updateProgress(0, 5, 'Validating file type and size...', estimatedTotalTime)
         await delay(300) // Small delay for visual feedback
-        
+
         const validation = validateFile(file)
         errors.value = validation.errors
         warnings.value = validation.warnings
@@ -805,7 +771,7 @@ export default defineComponent({
         // Step 3: Calculate SHA-256 hash (60% completion)  
         elapsedTime = (Date.now() - startTime) / 1000
         updateProgress(2, 45, 'Calculating SHA-256 hash...', Math.max(0, estimatedTotalTime - elapsedTime))
-        
+
         const hash = await calculateSHA256(file)
         contentHash.value = hash
 
@@ -1015,7 +981,11 @@ export default defineComponent({
   margin-top: 0.5rem;
 }
 
-.info-box, .processing-box, .warning-box, .error-box, .processed-data {
+.info-box,
+.processing-box,
+.warning-box,
+.error-box,
+.processed-data {
   margin: 2rem 0;
   padding: 1.5rem;
   border-radius: 8px;
@@ -1078,8 +1048,13 @@ export default defineComponent({
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .progress-percentage {
@@ -1167,8 +1142,15 @@ export default defineComponent({
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .pending-icon {
@@ -1177,7 +1159,8 @@ export default defineComponent({
   opacity: 0.5;
 }
 
-.time-remaining, .processing-info {
+.time-remaining,
+.processing-info {
   color: #666;
   font-size: 0.8rem;
 }
@@ -1337,7 +1320,8 @@ export default defineComponent({
   word-break: break-all;
 }
 
-.no-c2pa, .c2pa-pending {
+.no-c2pa,
+.c2pa-pending {
   margin-top: 0.75rem;
   font-size: 0.9rem;
   color: #666;
@@ -1440,27 +1424,27 @@ export default defineComponent({
   .verification {
     padding: 1rem;
   }
-  
+
   .verification h1 {
     font-size: 2rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .steps-progress {
     grid-template-columns: 1fr;
   }
-  
+
   .detail-row {
     flex-direction: column;
     gap: 0.25rem;
   }
-  
+
   .detail-label {
     min-width: auto;
   }
 }
-</style> 
+</style>
