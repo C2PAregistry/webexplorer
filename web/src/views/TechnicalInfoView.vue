@@ -49,10 +49,8 @@
         <h2>Current Feature Set</h2>
         <ul>
           <li>Public search by hash, content ID, or URL</li>
-          <li>Register C2PA manifests manually or via API</li>
           <li>Visual explorer of provenance chains</li>
           <li>Hosting reference linking</li>
-          <li>Open API with documentation</li>
           <li>Public JSON-LD metadata output</li>
         </ul>
       </div>
@@ -60,6 +58,8 @@
       <div class="feature-card todo-card">
         <h2>Features To-Do</h2>
         <ul>
+          <li>Register C2PA manifests manually or via API</li>
+          <li>Open API with documentation</li>
           <li>Manual platform ingestion Web tool</li>
           <li>Automatic platform ingestion tools for Third-Party Software</li>
           <li>Timeline-style chain viewer</li>

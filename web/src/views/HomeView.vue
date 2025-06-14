@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <h1>The Open Registry for C2PA Content</h1>
-    <p>Queryable. Open. Platform-Neutral.</p>
+    <p>Searchable. Open. Platform-Neutral.</p>
     <div class="search-container">
       <input type="text" placeholder="Search for content..." v-model="searchQuery" />
       <button @click="search">Search</button>
@@ -70,7 +70,7 @@ export default defineComponent({
 <style scoped>
 .home {
   text-align: center;
-  padding: 2rem;
+  padding: 1rem 2rem 1rem 2rem;
 }
 
 .project-explanation {
@@ -79,6 +79,14 @@ export default defineComponent({
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.project-explanation h2 {
+  text-align: center;
+}
+
+.project-explanation p {
+  text-align: justify;
 }
 
 .search-container {
@@ -188,6 +196,7 @@ button {
 
 .disclaimer-text {
   margin-top: 2rem;
+  margin-bottom: 0;
   font-size: 0.9rem;
   color: #868e96;
   font-style: italic;
