@@ -1,23 +1,65 @@
 <template>
-  <div class="verification">
-    <h1>Register New Content</h1>
-    <div class="upload-section">
-      <h2>Upload Content File</h2>
-      <input type="file" @change="handleFileUpload" />
-      <input type="text" v-model="publicIdentifier" placeholder="Public Identifier (e.g., my-first-nft-photo)" />
-      <button @click="registerContent">Register Content</button>
-    </div>
-    <div class="uploaded-data" v-if="contentHash">
-      <h2>Uploaded Data</h2>
-      <p><strong>Content Hash (SHA-256):</strong> {{ contentHash }}</p>
-      <p><strong>Extracted Metadata:</strong> {{ extractedMetadata }}</p>
-    </div>
-    <div class="registered-content" v-if="registeredContent">
-      <h2>Registered Content</h2>
-      <p><strong>Public ID:</strong> {{ registeredContent.publicId }}</p>
-      <p><strong>Hash:</strong> {{ registeredContent.hash }}</p>
-      <p><strong>Creator ID:</strong> {{ registeredContent.creatorId }}</p>
-      <p><strong>Registered On:</strong> {{ registeredContent.registeredOn }}</p>
+  <div class="min-h-screen bg-gray-100 flex flex-col items-center py-8">
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-8">
+      <h1 class="text-3xl font-bold text-center text-indigo-700 mb-2">C2PA-like Global Registry MVP</h1>
+      <p class="text-center text-gray-600 mb-6">Register and verify the provenance of your digital content.</p>
+
+      <!-- User Info (simulated) -->
+      <div class="bg-indigo-50 text-indigo-800 rounded-md px-4 py-2 text-center mb-2 text-sm">
+        Your User ID: 10716220852217595599
+      </div>
+      <div class="bg-green-100 text-green-800 rounded-md px-4 py-2 text-center mb-6 text-sm">
+        Signed in with custom token.
+      </div>
+
+      <!-- Register New Content -->
+      <h2 class="text-xl font-semibold text-indigo-700 mb-2">Register New Content</h2>
+      <div class="flex flex-col md:flex-row gap-4 mb-2">
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Upload Content File (Image/Video/PDF)</label>
+          <input type="file" @change="handleFileUpload" class="block w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+        </div>
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Public Identifier (e.g., "my-first-nft-photo")</label>
+          <input type="text" v-model="publicIdentifier" placeholder="Unique ID for your content" class="w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm px-3 py-2" />
+        </div>
+      </div>
+
+      <!-- Processed Data -->
+      <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
+        <h3 class="font-semibold text-gray-700 mb-2">Processed Data:</h3>
+        <p class="text-sm text-gray-700 mb-1"><span class="font-medium">Content Hash (SHA-256):</span> {{ contentHash || 'N/A' }}</p>
+        <p class="text-sm text-gray-700"><span class="font-medium">Extracted Metadata (EXIF):</span> {{ extractedMetadata || 'N/A (or no EXIF data found)' }}</p>
+      </div>
+
+      <button @click="registerContent" class="w-full bg-indigo-400 hover:bg-indigo-500 text-white font-semibold py-2 rounded-md transition mb-6">Register Content</button>
+
+      <!-- View Registered Content -->
+      <h2 class="text-xl font-semibold text-indigo-700 mb-2">View Registered Content</h2>
+      <input type="text" placeholder="Search by hash, ID, or file name..." class="w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm px-3 py-2 mb-2" />
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 rounded-md">
+          <thead>
+            <tr class="bg-gray-50 text-gray-700 text-sm">
+              <th class="px-4 py-2 text-left">PUBLIC ID</th>
+              <th class="px-4 py-2 text-left">HASH (PARTIAL)</th>
+              <th class="px-4 py-2 text-left">CREATOR ID</th>
+              <th class="px-4 py-2 text-left">REGISTERED ON</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="registeredContent" class="text-sm">
+              <td class="px-4 py-2">{{ registeredContent.publicId }}</td>
+              <td class="px-4 py-2">{{ registeredContent.hash.slice(0, 12) + '...' }}</td>
+              <td class="px-4 py-2">{{ registeredContent.creatorId }}</td>
+              <td class="px-4 py-2">{{ registeredContent.registeredOn }}</td>
+            </tr>
+            <tr v-else>
+              <td class="px-4 py-2 text-gray-400" colspan="4">No registered content yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -56,7 +98,7 @@ export default defineComponent({
           publicId: publicIdentifier.value,
           hash: contentHash.value,
           creatorId: 'user123',
-          registeredOn: new Date().toISOString()
+          registeredOn: new Date().toLocaleString()
         }
       }
     }
