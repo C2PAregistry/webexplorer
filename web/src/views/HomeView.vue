@@ -84,6 +84,8 @@ export default defineComponent({
 input {
   padding: 0.5rem;
   margin-right: 0.5rem;
+  width: 400px;
+  max-width: 80vw;
 }
 
 button {

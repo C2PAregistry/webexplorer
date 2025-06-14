@@ -1,37 +1,38 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col items-center py-8">
-    <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-8">
-      <h1 class="text-3xl font-bold text-center text-indigo-700 mb-2">C2PA-like Global Registry MVP</h1>
-      <p class="text-center text-gray-600 mb-6">Register and verify the provenance of your digital content.</p>
+  <div class="verification">
+    <h1>Content Verification</h1>
+    <p class="subtitle">Register and verify the provenance of your digital content.</p>
 
-      <!-- User Info (simulated) -->
-      <div class="bg-indigo-50 text-indigo-800 rounded-md px-4 py-2 text-center mb-2 text-sm">
+    <!-- User Info (simulated) -->
+    <div class="user-info">
+      <div class="user-id-info">
         Your User ID: 10716220852217595599
       </div>
-      <div class="bg-green-100 text-green-800 rounded-md px-4 py-2 text-center mb-6 text-sm">
+      <div class="login-status">
         Signed in with custom token.
       </div>
+    </div>
 
-      <!-- Register New Content -->
-      <h2 class="text-xl font-semibold text-indigo-700 mb-2">Register New Content</h2>
-      <div class="flex flex-col md:flex-row gap-4 mb-2">
-        <div class="flex-1">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+    <!-- Register New Content -->
+    <div class="content-section">
+      <h2>Register New Content</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>
             Upload Content File (Image/Video/PDF)
-            <span class="text-xs text-gray-500 block">Max size: Images 50MB, Videos 100MB, PDFs 20MB</span>
+            <span class="help-text">Max size: Images 50MB, Videos 100MB, PDFs 20MB</span>
           </label>
           <input 
             ref="fileInput"
             type="file" 
             @change="handleFileUpload" 
             accept="image/*,video/*,application/pdf"
-            class="block w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" 
           />
         </div>
-        <div class="flex-1">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div class="form-group">
+          <label>
             Public Identifier
-            <span class="text-xs text-gray-500 block">3-50 characters, letters, numbers, hyphens only</span>
+            <span class="help-text">3-50 characters, letters, numbers, hyphens only</span>
           </label>
           <input 
             type="text" 
@@ -39,231 +40,222 @@
             @input="validatePublicIdentifier"
             placeholder="my-content-id"
             maxlength="50"
-            class="w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm px-3 py-2" 
           />
-          <div v-if="publicIdentifierError" class="text-xs text-red-600 mt-1">
+          <div v-if="publicIdentifierError" class="error-text">
             {{ publicIdentifierError }}
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- File Info Display -->
-      <div v-if="fileInfo" class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
-        <h3 class="font-semibold text-blue-700 mb-2">File Information:</h3>
-        <div class="text-sm text-blue-800 space-y-1">
-          <p><span class="font-medium">Name:</span> {{ fileInfo.name }}</p>
-          <p><span class="font-medium">Size:</span> {{ formatFileSize(fileInfo.size) }}</p>
-          <p><span class="font-medium">Type:</span> {{ fileInfo.type || 'Unknown' }}</p>
-          <p><span class="font-medium">Last Modified:</span> {{ formatDate(fileInfo.lastModified) }}</p>
-        </div>
+    <!-- File Info Display -->
+    <div v-if="fileInfo" class="info-box">
+      <h3>File Information:</h3>
+      <div class="info-details">
+        <p><span class="label">Name:</span> {{ fileInfo.name }}</p>
+        <p><span class="label">Size:</span> {{ formatFileSize(fileInfo.size) }}</p>
+        <p><span class="label">Type:</span> {{ fileInfo.type || 'Unknown' }}</p>
+        <p><span class="label">Last Modified:</span> {{ formatDate(fileInfo.lastModified) }}</p>
       </div>
+    </div>
 
-      <!-- Processing Indicator with Progress Bar -->
-      <div v-if="isProcessing" class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
-        <div class="space-y-3">
-          <!-- Progress Header -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
-              <span class="text-sm font-medium text-blue-800">Processing File...</span>
+    <!-- Processing Indicator with Progress Bar -->
+    <div v-if="isProcessing" class="processing-box">
+      <div class="processing-content">
+        <!-- Progress Header -->
+        <div class="progress-header">
+          <div class="progress-label">
+            <div class="spinner"></div>
+            <span>Processing File...</span>
+          </div>
+          <span class="progress-percentage">{{ Math.round(progressPercentage) }}%</span>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+          <div 
+            class="progress-bar"
+            :style="{ width: progressPercentage + '%' }"
+          ></div>
+        </div>
+        
+        <!-- Current Step -->
+        <div class="current-step">
+          <span class="step-counter">{{ currentStep }}/{{ totalSteps }}:</span>
+          <span class="step-message">{{ processingMessage }}</span>
+        </div>
+          
+        <!-- Steps Progress -->
+        <div class="steps-progress">
+          <div 
+            v-for="(step, index) in processingSteps" 
+            :key="step.name"
+            class="step-item"
+            :class="{
+              'completed': step.completed,
+              'active': step.active && !step.completed,
+              'pending': !step.active && !step.completed
+            }"
+          >
+            <div class="step-content">
+              <div 
+                v-if="step.completed" 
+                class="step-icon completed-icon"
+              >✓</div>
+              <div 
+                v-else-if="step.active"
+                class="step-icon active-icon"
+              ></div>
+              <div 
+                v-else
+                class="step-icon pending-icon"
+              ></div>
+              <span class="step-name">{{ step.name }}</span>
             </div>
-            <span class="text-sm font-semibold text-blue-700">{{ Math.round(progressPercentage) }}%</span>
-          </div>
-          
-          <!-- Progress Bar -->
-          <div class="w-full bg-blue-200 rounded-full h-2">
-            <div 
-              class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-              :style="{ width: progressPercentage + '%' }"
-            ></div>
-          </div>
-          
-          <!-- Current Step -->
-          <div class="text-sm text-blue-700">
-            <span class="font-medium">{{ currentStep }}/{{ totalSteps }}:</span>
-            <span class="ml-1">{{ processingMessage }}</span>
-          </div>
-          
-          <!-- Steps Progress -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 text-xs">
-            <div 
-              v-for="(step, index) in processingSteps" 
-              :key="step.name"
-              class="flex items-center p-2 rounded"
-              :class="{
-                'bg-green-100 text-green-700': step.completed,
-                'bg-blue-100 text-blue-700': step.active && !step.completed,
-                'bg-gray-100 text-gray-500': !step.active && !step.completed
-              }"
-            >
-              <div class="flex items-center">
-                <svg 
-                  v-if="step.completed" 
-                  class="w-3 h-3 mr-1" 
-                  fill="currentColor" 
-                  viewBox="0 0 20 20"
-                >
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <div 
-                  v-else-if="step.active"
-                  class="w-3 h-3 mr-1 rounded-full border-2 border-current animate-pulse"
-                ></div>
-                <div 
-                  v-else
-                  class="w-3 h-3 mr-1 rounded-full border border-current opacity-50"
-                ></div>
-                <span class="truncate">{{ step.name }}</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Time Estimation -->
-          <div v-if="timeRemaining && timeRemaining > 0" class="text-xs text-blue-600">
-            <span>Estimated time remaining: {{ formatTimeRemaining(timeRemaining) }}</span>
-          </div>
-          
-          <!-- File Processing Info -->
-          <div class="text-xs text-blue-600 space-y-1">
-            <div>Processing: {{ fileInfo?.name || 'Unknown file' }}</div>
-            <div v-if="fileInfo">Size: {{ formatFileSize(fileInfo.size) }} • Type: {{ fileInfo.type || 'Unknown' }}</div>
           </div>
         </div>
-      </div>
-
-      <!-- Warnings Display -->
-      <div v-if="warnings.length > 0" class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
-        <h3 class="font-semibold text-yellow-700 mb-2">⚠️ Warnings:</h3>
-        <ul class="text-sm text-yellow-700 space-y-1">
-          <li v-for="warning in warnings" :key="warning" class="flex items-start">
-            <span class="mr-2">•</span>
-            <span>{{ warning }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Error Display -->
-      <div v-if="errors.length > 0" class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-        <h3 class="font-semibold text-red-700 mb-2">❌ Errors:</h3>
-        <ul class="text-sm text-red-700 space-y-1">
-          <li v-for="error in errors" :key="error" class="flex items-start">
-            <span class="mr-2">•</span>
-            <span>{{ error }}</span>
-          </li>
-        </ul>
-        <button 
-          @click="clearErrors"
-          class="mt-2 text-xs text-red-600 hover:text-red-800 underline"
-        >
-          Clear errors and try again
-        </button>
-      </div>
-
-      <!-- Processed Data -->
-      <div v-if="contentHash || extractedMetadata || c2paData" class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
-        <h3 class="font-semibold text-gray-700 mb-2">✅ Processed Data:</h3>
-        <div class="space-y-3">
-          <div>
-            <span class="font-medium text-sm text-gray-700">Content Hash (SHA-256):</span>
-            <p class="text-xs text-gray-600 font-mono break-all">{{ contentHash || 'N/A' }}</p>
-          </div>
           
-          <!-- C2PA Information -->
-          <div>
-            <span class="font-medium text-sm text-gray-700">C2PA Content Authenticity:</span>
-            <div v-if="c2paData" class="mt-1">
-              <div v-if="c2paData.isValid" class="flex items-center text-xs text-green-600 mb-2">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="font-medium">Valid C2PA Certificate Found</span>
-              </div>
-              <div v-else class="flex items-center text-xs text-red-600 mb-2">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="font-medium">Invalid C2PA Certificate</span>
-              </div>
-              
-              <div class="bg-white rounded border p-2 text-xs text-gray-600 space-y-1">
-                <div v-if="c2paData.producer" class="flex">
-                  <span class="font-medium min-w-0 w-20 truncate">Producer:</span>
-                  <span class="ml-2 break-all">{{ c2paData.producer }}</span>
-                </div>
-                <div v-if="c2paData.created" class="flex">
-                  <span class="font-medium min-w-0 w-20 truncate">Created:</span>
-                  <span class="ml-2">{{ formatDate(new Date(c2paData.created).getTime()) }}</span>
-                </div>
-                <div v-if="c2paData.software" class="flex">
-                  <span class="font-medium min-w-0 w-20 truncate">Software:</span>
-                  <span class="ml-2 break-all">{{ c2paData.software }}</span>
-                </div>
-                <div v-if="c2paData.assertions && c2paData.assertions.length > 0" class="flex">
-                  <span class="font-medium min-w-0 w-20 truncate">Assertions:</span>
-                  <span class="ml-2">{{ c2paData.assertions.length }} claim(s)</span>
-                </div>
-                <div class="flex">
-                  <span class="font-medium min-w-0 w-20 truncate">Signature:</span>
-                  <span class="ml-2 text-xs font-mono">{{ c2paData.signatureInfo || 'Present' }}</span>
-                </div>
-              </div>
-            </div>
-            <div v-else-if="c2paChecked" class="text-xs text-gray-500 mt-1">
-              <div class="flex items-center">
-                <svg class="w-4 h-4 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                </svg>
-                <span>No C2PA certificate found in this file</span>
-              </div>
-            </div>
-            <div v-else class="text-xs text-gray-400 mt-1">
-              Checking for C2PA certificate...
-            </div>
-          </div>
-
-          <div>
-            <span class="font-medium text-sm text-gray-700">Extracted Metadata:</span>
-            <div v-if="extractedMetadata" class="text-xs text-gray-600 space-y-1 mt-1">
-              <div v-for="(value, key) in extractedMetadata" :key="key" class="flex">
-                <span class="font-medium min-w-0 w-32 truncate">{{ key }}:</span>
-                <span class="ml-2 break-all">{{ value }}</span>
-              </div>
-            </div>
-            <p v-else class="text-xs text-gray-500">N/A (no metadata found or not an image)</p>
-          </div>
+        <!-- Time Estimation -->
+        <div v-if="timeRemaining && timeRemaining > 0" class="time-remaining">
+          <span>Estimated time remaining: {{ formatTimeRemaining(timeRemaining) }}</span>
+        </div>
+        
+        <!-- File Processing Info -->
+        <div class="processing-info">
+          <div>Processing: {{ fileInfo?.name || 'Unknown file' }}</div>
+          <div v-if="fileInfo">Size: {{ formatFileSize(fileInfo.size) }} • Type: {{ fileInfo.type || 'Unknown' }}</div>
         </div>
       </div>
+    </div>
 
+    <!-- Warnings Display -->
+    <div v-if="warnings.length > 0" class="warning-box">
+      <h3>⚠️ Warnings:</h3>
+      <ul>
+        <li v-for="warning in warnings" :key="warning">
+          <span>•</span>
+          <span>{{ warning }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Error Display -->
+    <div v-if="errors.length > 0" class="error-box">
+      <h3>❌ Errors:</h3>
+      <ul>
+        <li v-for="error in errors" :key="error">
+          <span>•</span>
+          <span>{{ error }}</span>
+        </li>
+      </ul>
       <button 
-        @click="registerContent" 
-        :disabled="!canRegister"
-        class="w-full bg-indigo-400 hover:bg-indigo-500 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-2 rounded-md transition mb-6"
+        @click="clearErrors"
+        class="clear-errors-btn"
       >
-        {{ getButtonText() }}
+        Clear errors and try again
       </button>
+    </div>
 
-      <!-- View Registered Content -->
-      <h2 class="text-xl font-semibold text-indigo-700 mb-2">View Registered Content</h2>
-      <input type="text" placeholder="Search by hash, ID, or file name..." class="w-full rounded-md border border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm px-3 py-2 mb-2" />
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 rounded-md">
+    <!-- Processed Data -->
+    <div v-if="contentHash || extractedMetadata || c2paData" class="processed-data">
+      <h3>✅ Processed Data:</h3>
+      <div class="data-sections">
+        <div class="data-item">
+          <span class="data-label">Content Hash (SHA-256):</span>
+          <p class="hash-value">{{ contentHash || 'N/A' }}</p>
+        </div>
+        
+        <!-- C2PA Information -->
+        <div class="data-item">
+          <span class="data-label">C2PA Content Authenticity:</span>
+          <div v-if="c2paData" class="c2pa-info">
+            <div v-if="c2paData.isValid" class="c2pa-status valid">
+              <span class="status-icon">✓</span>
+              <span class="status-text">Valid C2PA Certificate Found</span>
+            </div>
+            <div v-else class="c2pa-status invalid">
+              <span class="status-icon">✗</span>
+              <span class="status-text">Invalid C2PA Certificate</span>
+            </div>
+              
+            <div class="c2pa-details">
+              <div v-if="c2paData.producer" class="detail-row">
+                <span class="detail-label">Producer:</span>
+                <span class="detail-value">{{ c2paData.producer }}</span>
+              </div>
+              <div v-if="c2paData.created" class="detail-row">
+                <span class="detail-label">Created:</span>
+                <span class="detail-value">{{ formatDate(new Date(c2paData.created).getTime()) }}</span>
+              </div>
+              <div v-if="c2paData.software" class="detail-row">
+                <span class="detail-label">Software:</span>
+                <span class="detail-value">{{ c2paData.software }}</span>
+              </div>
+              <div v-if="c2paData.assertions && c2paData.assertions.length > 0" class="detail-row">
+                <span class="detail-label">Assertions:</span>
+                <span class="detail-value">{{ c2paData.assertions.length }} claim(s)</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Signature:</span>
+                <span class="detail-value">{{ c2paData.signatureInfo || 'Present' }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="c2paChecked" class="no-c2pa">
+            <div class="no-c2pa-content">
+              <span class="status-icon">ℹ</span>
+              <span class="status-text">No C2PA certificate found in this file</span>
+            </div>
+          </div>
+          <div v-else class="c2pa-pending">
+            Checking for C2PA certificate...
+          </div>
+        </div>
+
+        <div class="data-item">
+          <span class="data-label">Extracted Metadata:</span>
+          <div v-if="extractedMetadata" class="metadata-details">
+            <div v-for="(value, key) in extractedMetadata" :key="key" class="detail-row">
+              <span class="detail-label">{{ key }}:</span>
+              <span class="detail-value">{{ value }}</span>
+            </div>
+          </div>
+          <p v-else class="no-metadata">N/A (no metadata found or not an image)</p>
+        </div>
+        </div>
+      </div>
+
+    <button 
+      @click="registerContent" 
+      :disabled="!canRegister"
+      class="register-btn"
+    >
+      {{ getButtonText() }}
+    </button>
+
+    <!-- View Registered Content -->
+    <div class="content-section">
+      <h2>View Registered Content</h2>
+      <input type="text" placeholder="Search by hash, ID, or file name..." class="search-input" />
+      <div class="table-container">
+        <table class="content-table">
           <thead>
-            <tr class="bg-gray-50 text-gray-700 text-sm">
-              <th class="px-4 py-2 text-left">PUBLIC ID</th>
-              <th class="px-4 py-2 text-left">HASH (PARTIAL)</th>
-              <th class="px-4 py-2 text-left">CREATOR ID</th>
-              <th class="px-4 py-2 text-left">REGISTERED ON</th>
+            <tr>
+              <th>PUBLIC ID</th>
+              <th>HASH (PARTIAL)</th>
+              <th>CREATOR ID</th>
+              <th>REGISTERED ON</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-if="registeredContent" class="text-sm">
-              <td class="px-4 py-2">{{ registeredContent.publicId }}</td>
-              <td class="px-4 py-2">{{ registeredContent.hash.slice(0, 12) + '...' }}</td>
-              <td class="px-4 py-2">{{ registeredContent.creatorId }}</td>
-              <td class="px-4 py-2">{{ registeredContent.registeredOn }}</td>
+            <tr v-if="registeredContent">
+              <td>{{ registeredContent.publicId }}</td>
+              <td>{{ registeredContent.hash.slice(0, 12) + '...' }}</td>
+              <td>{{ registeredContent.creatorId }}</td>
+              <td>{{ registeredContent.registeredOn }}</td>
             </tr>
             <tr v-else>
-              <td class="px-4 py-2 text-gray-400" colspan="4">No registered content yet.</td>
+              <td colspan="4" class="no-content">No registered content yet.</td>
             </tr>
           </tbody>
         </table>
@@ -921,34 +913,554 @@ export default defineComponent({
 
 <style scoped>
 .verification {
-  text-align: center;
-  padding: 2rem;
-}
-
-.upload-section, .uploaded-data, .registered-content {
-  margin: 2rem 0;
-  text-align: left;
   max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  line-height: 1.6;
 }
 
-input[type="file"], input[type="text"] {
-  margin: 1rem 0;
-  padding: 0.5rem;
+.verification h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.user-info {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.user-id-info {
+  background: #f8f9fa;
+  color: #42b983;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.login-status {
+  background: #e8f5e8;
+  color: #369870;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.content-section {
+  margin: 3rem 0;
+  text-align: left;
+}
+
+.content-section h2 {
+  color: #42b983;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  border-bottom: 2px solid #42b983;
+  padding-bottom: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.help-text {
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: normal;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 2px solid #e1e1e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #42b983;
+}
+
+.error-text {
+  color: #e74c3c;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.info-box, .processing-box, .warning-box, .error-box, .processed-data {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.info-box {
+  background: #f8f9fa;
+  border-left: 4px solid #42b983;
+}
+
+.info-box h3 {
+  color: #42b983;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.info-details p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.processing-box {
+  background: #f0f8ff;
+  border-left: 4px solid #42b983;
+}
+
+.processing-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+}
+
+.progress-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #42b983;
+  font-weight: 600;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e1e1e1;
+  border-top: 2px solid #42b983;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.progress-percentage {
+  color: #42b983;
+  font-weight: 600;
+}
+
+.progress-bar-container {
   width: 100%;
+  height: 8px;
+  background: #e1e1e1;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-button {
-  padding: 0.5rem 1rem;
+.progress-bar {
+  height: 100%;
+  background: #42b983;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.current-step {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.step-counter {
+  font-weight: 600;
+  color: #42b983;
+}
+
+.steps-progress {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+}
+
+.step-item {
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.step-item.completed {
+  background: #e8f5e8;
+  color: #369870;
+}
+
+.step-item.active {
+  background: #f0f8ff;
+  color: #42b983;
+}
+
+.step-item.pending {
+  background: #f8f9fa;
+  color: #999;
+}
+
+.step-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+
+.completed-icon {
+  background: #369870;
+  color: white;
+  border-radius: 50%;
+}
+
+.active-icon {
+  border: 2px solid #42b983;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pending-icon {
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.time-remaining, .processing-info {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.warning-box {
+  background: #fff8e1;
+  border-left: 4px solid #ffa726;
+}
+
+.warning-box h3 {
+  color: #f57c00;
+  margin-bottom: 1rem;
+}
+
+.warning-box ul li {
+  color: #e65100;
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.error-box {
+  background: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.error-box h3 {
+  color: #d32f2f;
+  margin-bottom: 1rem;
+}
+
+.error-box ul li {
+  color: #c62828;
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.clear-errors-btn {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  padding: 0;
+}
+
+.clear-errors-btn:hover {
+  color: #b71c1c;
+}
+
+.processed-data {
+  background: #f8f9fa;
+  border-left: 4px solid #42b983;
+}
+
+.processed-data h3 {
+  color: #42b983;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.data-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.data-item {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.data-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.data-label {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.hash-value {
+  font-family: 'Courier New', monospace;
+  color: #666;
+  font-size: 0.8rem;
+  word-break: break-all;
+  background: #f5f5f5;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.c2pa-info {
+  margin-top: 0.75rem;
+}
+
+.c2pa-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.c2pa-status.valid {
+  background: #e8f5e8;
+  color: #369870;
+}
+
+.c2pa-status.invalid {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.status-icon {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.c2pa-details {
+  background: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 0.75rem;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  min-width: 120px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  color: #555;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.no-c2pa, .c2pa-pending {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.no-c2pa-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metadata-details {
+  margin-top: 0.75rem;
+}
+
+.no-metadata {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 0.75rem 0 0 0;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 1rem 2rem;
   background-color: #42b983;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 2rem 0;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #3aa876;
+.register-btn:hover:not(:disabled) {
+  background-color: #369870;
+}
+
+.register-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 2px solid #e1e1e1;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #42b983;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e1e1e1;
+}
+
+.content-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.content-table th {
+  background: #f8f9fa;
+  color: #2c3e50;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #e1e1e1;
+}
+
+.content-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e1e1e1;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.content-table tr:last-child td {
+  border-bottom: none;
+}
+
+.no-content {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .verification {
+    padding: 1rem;
+  }
+  
+  .verification h1 {
+    font-size: 2rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .steps-progress {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .detail-label {
+    min-width: auto;
+  }
 }
 </style> 
