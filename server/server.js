@@ -6,6 +6,10 @@ fastify.register(require('@fastify/mysql'), {
     connectionString: ''
 })
 
+fastify.register(require('@fastify/cors'), {
+    origin: '*'
+})
+
 fastify.get('/entry', function (req, res) {
     fastify.mysql.query('SELECT * from entry',
         function (err, result) {
