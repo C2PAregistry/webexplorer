@@ -1,0 +1,27 @@
+{
+    "claim_generator": "OpenAI",
+    "format": "image/png",
+    "title": "nimiq.png",
+    "assertions": [
+        {
+            "label": "Adobe Photoshop",
+            "data": {
+                "action": "c2pa.created"
+            }
+        },
+        {
+            "label": "GIMP 3.0",
+            "data": {
+                "action": "c2pa.update",
+                "change": "Background set to white"
+            }
+        },
+        {
+            "label": "OpenAI ChatGPT Model o4-mini",
+            "data": {
+                "action": "c2pa.update",
+                "change": "Add smiley to logo"
+            }
+        }
+    ]
+}
