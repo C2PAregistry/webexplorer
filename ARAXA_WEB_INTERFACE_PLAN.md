@@ -53,15 +53,14 @@ Araxa is a C2PA-like Global Registry that serves as an independent, publicly ver
 
 ### C. Search Results ⚠️ **NEEDS IMPLEMENTATION**
 - [x] Basic SearchResultsView component created
-- [ ] Grid/List view of verified content
-- [ ] Filtering options (date, creator, content type)
+- [x] Filtering options (title, author, year, hosting url reference)
 - [ ] Sorting capabilities
 - [ ] Pagination for large result sets
 - [ ] Search functionality integration
 
 ### D. Content Details View ⚠️ **NEEDS IMPLEMENTATION**
 - [x] Basic ContentDetailsView component created
-- [ ] Comprehensive metadata display
+- [x] Comprehensive metadata display
 - [ ] Provenance chain visualization
 - [ ] Modification history
 - [ ] Original creator information
