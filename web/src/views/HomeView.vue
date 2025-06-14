@@ -2,14 +2,14 @@
   <div class="home">
     <h1>The Open Registry for C2PA Content</h1>
     <p>Queryable. Open. Platform-Neutral.</p>
+    <div class="search-container">
+      <input type="text" placeholder="Search for content..." v-model="searchQuery" />
+      <button @click="search">Search</button>
+    </div>
     <div class="project-explanation">
       <h2>Our Mission</h2>
       <p>In a world of increasing AI-generated content and media manipulation, C2PARegistry.com provides a public registry for the metadata history and relationships of C2PA-compliant digital assets.</p>
       <p>Our goal is not to verify the content itself, but to connect and expose the relationships between provenance records across tools and platforms — reducing fragmentation, avoiding metadata silos, and advancing the C2PA mission of transparency and trust. By acting as a shared lookup and registration hub, we help bring C2PA to mainstream adoption, ensuring that content authenticity becomes a common standard across the internet.</p>
-    </div>
-    <div class="search-container">
-      <input type="text" placeholder="Search for content..." v-model="searchQuery" />
-      <button @click="search">Search</button>
     </div>
     <div class="partners-section">
       <h2>Members of the C2PA Coalition</h2>
