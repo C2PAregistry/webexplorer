@@ -33,18 +33,32 @@ fastify.get('/entry/:id', function (req, res) {
     )
 })
 
-fastify.get('/entry/:id/references', function (req, res) {
+fastify.get('/entry/:id/references', (req, res) => {
     fastify.mysql.query(`SELECT * from reference WHERE entryId = ${req.params.id}`,
-        function (err, result) {
-            if (err) {
-                return res.send(err)
-            }
+        function (err, children) {
+            fastify.mysql.query(`SELECT * from reference`, function (err, parents) {
+                const references = children.map((r) => {
+                    r.assertion = JSON.parse(r.assertion)
+                    return r
+                })
 
-            const references = result.map((r) => {
-                r.assertion = JSON.parse(r.assertion)
-                return r
+                const referrers = parents.filter((p) => {
+                    p.assertion = JSON.parse(p.assertion)
+                    return p.assertion.data.entryId === parseInt(req.params.id)
+                })
+
+                let usedBy = []
+                referrers.forEach(p => {
+                    fastify.mysql.query(`SELECT * from entry WHERE id = ${p.entryId}`, (err, par) => {
+                        usedBy.push(par[0])
+                    })
+                });
+
+                // dang
+                setTimeout(() => {
+                    return res.send({ references, usedBy })
+                }, 1000);
             })
-            return res.send(references)
         }
     )
 })
