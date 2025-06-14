@@ -18,12 +18,16 @@
         <table class="results-table">
           <thead>
             <tr>
+              <th>PREVIEW</th>
               <th>NAME</th>
               <th>SOURCE URL</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in paginatedResults" :key="item.publicId">
+              <td>
+                <img v-if="previewSrc(item)" :src="previewSrc(item)" alt="preview" class="thumb" @error="($event.target as HTMLImageElement).style.display='none'" />
+              </td>
               <td>
                 <router-link :to="`/content/${item.publicId}`" class="content-link">{{ item.name }}</router-link>
               </td>
@@ -100,6 +104,26 @@ export default defineComponent({
       return filteredResults.value.slice(start, start + pageSize)
     })
 
+    const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp']
+
+    const previewSrc = (item: SearchResult) => {
+      const lowerName = item.name.toLowerCase()
+      const isImageByName = imageExtensions.some(ext => lowerName.endsWith(ext))
+      if (isImageByName) return deriveImageUrl(item.sourceUrl)
+      // also treat google drive file links where mime type unknown but name includes image ext
+      return null
+    }
+
+    const deriveImageUrl = (url: string): string | null => {
+      const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/)
+      if (driveMatch) {
+        const fileId = driveMatch[1]
+        // Use Drive thumbnail endpoint (smaller, embeddable)
+        return `https://drive.google.com/thumbnail?id=${fileId}`
+      }
+      return url
+    }
+
     const search = () => {
       page.value = 1
       router.replace({ path: '/search', query: { q: searchQuery.value } })
@@ -122,7 +146,8 @@ export default defineComponent({
       totalPages,
       search,
       prevPage,
-      nextPage
+      nextPage,
+      previewSrc
     }
   }
 })
@@ -319,5 +344,12 @@ export default defineComponent({
     width: 100%;
     max-width: 120px;
   }
+}
+
+.thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 </style> 

@@ -21,6 +21,9 @@
             <span class="detail-label">Source URL:</span>
             <a :href="content.reference" target="_blank" class="detail-value source-link">{{ content.reference }}</a>
           </div>
+          <div v-if="imagePreviewSrc" class="detail-item">
+            <img :src="imagePreviewSrc" alt="preview" class="detail-image" @error="($event.target as HTMLImageElement).style.display='none'" />
+          </div>
         </div>
       </div>
 
@@ -75,6 +78,7 @@ export default defineComponent({
     const references = ref<any[]>([])
     const usedBy = ref<any[]>([])
     const loading = ref(true)
+    const imagePreviewSrc = ref<string | null>(null)
 
     const loadData = async () => {
       try {
@@ -82,6 +86,7 @@ export default defineComponent({
         const entryRes = await fetch(`${API_BASE}/entry/${id}`)
         if (!entryRes.ok) throw new Error('Entry not found')
         content.value = await entryRes.json()
+        imagePreviewSrc.value = deriveImageUrl(content.value.reference, content.value.name)
 
         const refRes = await fetch(`${API_BASE}/entry/${id}/references`)
         if (refRes.ok) {
@@ -102,10 +107,22 @@ export default defineComponent({
       content,
       references,
       usedBy,
-      loading
+      loading,
+      imagePreviewSrc
     }
   }
 })
+
+function deriveImageUrl(url: string, name: string): string | null {
+  const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp']
+  const isImage = imageExtensions.some(ext => name.toLowerCase().endsWith(ext))
+  if (!isImage) return null
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/)
+  if (driveMatch) {
+    return `https://drive.google.com/thumbnail?id=${driveMatch[1]}`
+  }
+  return url
+}
 </script>
 
 <style scoped>
@@ -279,5 +296,11 @@ export default defineComponent({
   color: #6c757d;
   font-size: 0.85rem;
   margin-left: 0.25rem;
+}
+
+.detail-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 0.5rem;
 }
 </style> 
