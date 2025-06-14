@@ -2,3 +2,4 @@ node_modules
 dist
 signed/*.c2pa
 signed/*.pdf
+.DS_Store
