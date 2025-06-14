@@ -33,10 +33,12 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'HomeView',
   setup() {
+    const router = useRouter()
     const searchQuery = ref('')
     const logos = ref([
       { name: 'Adobe', url: '#' },
@@ -50,8 +52,10 @@ export default defineComponent({
     ])
 
     const search = () => {
-      // Implement search functionality here
-      console.log('Searching for:', searchQuery.value)
+      router.push({
+        path: '/search',
+        query: { q: searchQuery.value }
+      })
     }
 
     return {

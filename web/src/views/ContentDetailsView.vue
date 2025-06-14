@@ -53,28 +53,49 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 export default defineComponent({
   name: 'ContentDetailsView',
   setup() {
+    const API_BASE = 'http://91.99.113.226:3000'
     const route = useRoute()
-    // Mock data for demonstration
-    const content = ref({
-      publicId: route.params.id || 'photo-1',
-      hash: 'mockhash1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      creatorId: 'user1',
-      registeredOn: new Date().toLocaleString(),
-      fileName: 'my-photo.jpg',
-      fileType: 'image/jpeg',
-      extractedMetadata: 'Camera: Canon EOS, ISO: 100, ...',
-    })
-    const provenanceChain = ref([
-      { date: '2024-06-14 10:00', description: 'Content registered by user1.' },
-      { date: '2024-06-15 09:30', description: 'Metadata updated by user1.' },
-      { date: '2024-06-16 14:20', description: 'Ownership transferred to user2.' },
-    ])
+    const content = ref<any | null>(null)
+    const provenanceChain = ref<{ date: string; description: string }[]>([])
+
+    const loadData = async () => {
+      try {
+        const id = route.params.id
+        const [entryRes, refRes] = await Promise.all([
+          fetch(`${API_BASE}/entry/${id}`),
+          fetch(`${API_BASE}/entry/${id}/references`)
+        ])
+        if (!entryRes.ok) throw new Error('Entry not found')
+        const entry = await entryRes.json()
+        content.value = {
+          publicId: entry.id,
+          hash: '', // placeholder not in DB
+          creatorId: '',
+          registeredOn: new Date().toLocaleString(),
+          fileName: entry.name,
+          fileType: '',
+          extractedMetadata: entry.reference,
+        }
+        if (refRes.ok) {
+          const refs = await refRes.json()
+          provenanceChain.value = refs.references.map((r: any) => ({
+            date: '',
+            description: JSON.stringify(r.assertion)
+          }))
+        }
+      } catch (err) {
+        console.error('Failed to load content details', err)
+      }
+    }
+
+    onMounted(loadData)
+
     return {
       content,
       provenanceChain

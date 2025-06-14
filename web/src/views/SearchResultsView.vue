@@ -48,7 +48,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 interface SearchResult {
   publicId: string;
@@ -56,17 +57,32 @@ interface SearchResult {
   sourceUrl: string;
 }
 
-const MOCK_RESULTS: SearchResult[] = Array.from({ length: 23 }, (_, i) => ({
-  publicId: `content-${i + 1}`,
-  name: `Creative Photo ${i + 1}`,
-  sourceUrl: `https://example.com/content/${i + 1}`,
-}))
+// Backend API base URL
+const API_BASE = 'http://91.99.113.226:3000'
+
+async function fetchEntries(): Promise<SearchResult[]> {
+  try {
+    const response = await fetch(`${API_BASE}/entry`)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const data = await response.json() as { id: number; name: string; reference: string }[]
+    return data.map(item => ({
+      publicId: String(item.id),
+      name: item.name,
+      sourceUrl: item.reference,
+    }))
+  } catch (err) {
+    console.error('Failed to fetch entries', err)
+    return []
+  }
+}
 
 export default defineComponent({
   name: 'SearchResultsView',
   setup() {
-    const searchQuery = ref('')
-    const results = ref<SearchResult[]>(MOCK_RESULTS)
+    const route = useRoute()
+    const router = useRouter()
+    const searchQuery = ref((route.query.q as string) || '')
+    const results = ref<SearchResult[]>([])
     const page = ref(1)
     const pageSize = 5
 
@@ -86,6 +102,7 @@ export default defineComponent({
 
     const search = () => {
       page.value = 1
+      router.replace({ path: '/search', query: { q: searchQuery.value } })
     }
     const prevPage = () => {
       if (page.value > 1) page.value--
@@ -93,6 +110,10 @@ export default defineComponent({
     const nextPage = () => {
       if (page.value < totalPages.value) page.value++
     }
+
+    onMounted(async () => {
+      results.value = await fetchEntries()
+    })
 
     return {
       searchQuery,
