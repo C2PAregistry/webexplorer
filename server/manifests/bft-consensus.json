@@ -1,0 +1,21 @@
+{
+    "claim_generator": "araxa-reference-assertion/0.0.1",
+    "format": "application/pdf",
+    "title": "The latest gossip on BFT consensus",
+    "assertions": [
+        {
+            "label": "com.araxa.reference-assertion",
+            "data": {
+                "title": "Bitcoin: A Peer-to-Peer Electronic Cash System",
+                "authors": [
+                    "Satoshi Nakamoto"
+                ],
+                "version": 1,
+                "reference": null,
+                "abstract": null,
+                "file": "https://bitcoin.org/bitcoin.pdf",
+                "year": 2008
+            }
+        }
+    ]
+}

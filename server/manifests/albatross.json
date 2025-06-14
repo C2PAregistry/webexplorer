@@ -1,0 +1,23 @@
+{
+    "claim_generator": "araxa-reference-assertion/0.0.1",
+    "format": "application/pdf",
+    "title": "Albatross: An optimistic consensus algorithm",
+    "assertions": [
+        {
+            "label": "com.araxa.reference-assertion",
+            "data": {
+                "title": "The latest gossip on BFT consensus",
+                "authors": [
+                    "Ethan Buchman",
+                    "Jae Kwon",
+                    "Zarko Milosevic"
+                ],
+                "version": 3,
+                "reference": "arXiv:1807.04938v3",
+                "abstract": "https://arxiv.org/abs/1807.04938v3",
+                "file": "https://arxiv.org/pdf/1807.04938v3",
+                "year": 2019
+            }
+        }
+    ]
+}
