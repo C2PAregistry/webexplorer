@@ -58,7 +58,7 @@ interface SearchResult {
 }
 
 // Backend API base URL
-const API_BASE = 'http://91.99.113.226:3000'
+const API_BASE = 'https://api.c2paregistry.com'
 
 async function fetchEntries(): Promise<SearchResult[]> {
   try {

@@ -22,7 +22,8 @@
             <a :href="content.reference" target="_blank" class="detail-value source-link">{{ content.reference }}</a>
           </div>
           <div v-if="imagePreviewSrc" class="detail-item">
-            <img :src="imagePreviewSrc" alt="preview" class="detail-image" @error="($event.target as HTMLImageElement).style.display='none'" />
+            <img :src="imagePreviewSrc" alt="preview" class="detail-image"
+              @error="($event.target as HTMLImageElement).style.display = 'none'" />
           </div>
         </div>
       </div>
@@ -72,7 +73,7 @@ import { useRoute } from 'vue-router'
 export default defineComponent({
   name: 'ContentDetailsView',
   setup() {
-    const API_BASE = 'http://91.99.113.226:3000'
+    const API_BASE = 'https://api.c2paregistry.com'
     const route = useRoute()
     const content = ref<any | null>(null)
     const references = ref<any[]>([])
@@ -219,20 +220,20 @@ function deriveImageUrl(url: string, name: string): string | null {
   .content-details {
     padding: 1rem;
   }
-  
+
   .content-details h1 {
     font-size: 2rem;
   }
-  
+
   .content-section h2 {
     font-size: 1.5rem;
   }
-  
+
   .detail-item {
     flex-direction: column;
     gap: 0.25rem;
   }
-  
+
   .detail-label {
     min-width: auto;
   }
@@ -303,4 +304,4 @@ function deriveImageUrl(url: string, name: string): string | null {
   border-radius: 8px;
   margin-top: 0.5rem;
 }
-</style> 
+</style>
