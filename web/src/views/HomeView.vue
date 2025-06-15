@@ -18,11 +18,11 @@
         <div class="logo-container">
           <!-- First set of logos -->
           <div class="logo-item" v-for="(logo, index) in logos" :key="`first-${index}`">
-            <div class="logo-placeholder">{{ logo.name }}</div>
+            <img :src="logo.src" :alt="logo.name + ' logo'" class="logo-image" />
           </div>
           <!-- Duplicate set for seamless loop -->
           <div class="logo-item" v-for="(logo, index) in logos" :key="`second-${index}`">
-            <div class="logo-placeholder">{{ logo.name }}</div>
+            <img :src="logo.src" :alt="logo.name + ' logo'" class="logo-image" />
           </div>
         </div>
       </div>
@@ -35,20 +35,30 @@
 import { defineComponent, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+// Import logo images
+import adobeLogo from '../assets/adobe-logo.svg'
+import microsoftLogo from '../assets/microsoft-logo.svg'
+import googleLogo from '../assets/google-logo.svg'
+import metaLogo from '../assets/meta-logo.svg'
+import openaiLogo from '../assets/openai-logo.svg'
+import nvidiaLogo from '../assets/nvidia-logo.svg'
+import samsungLogo from '../assets/samsung-logo.svg'
+import canonLogo from '../assets/canon-logo.svg'
+
 export default defineComponent({
   name: 'HomeView',
   setup() {
     const router = useRouter()
     const searchQuery = ref('')
     const logos = ref([
-      { name: 'Adobe', url: '#' },
-      { name: 'Microsoft', url: '#' },
-      { name: 'Google', url: '#' },
-      { name: 'Meta', url: '#' },
-      { name: 'OpenAI', url: '#' },
-      { name: 'NVIDIA', url: '#' },
-      { name: 'Samsung', url: '#' },
-      { name: 'Canon', url: '#' }
+      { name: 'Adobe', src: adobeLogo, url: '#' },
+      { name: 'Microsoft', src: microsoftLogo, url: '#' },
+      { name: 'Google', src: googleLogo, url: '#' },
+      { name: 'Meta', src: metaLogo, url: '#' },
+      { name: 'OpenAI', src: openaiLogo, url: '#' },
+      { name: 'NVIDIA', src: nvidiaLogo, url: '#' },
+      { name: 'Samsung', src: samsungLogo, url: '#' },
+      { name: 'Canon', src: canonLogo, url: '#' }
     ])
 
     const search = () => {
@@ -154,6 +164,28 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: white;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.logo-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.logo-item:hover .logo-image {
+  transform: scale(1.05);
 }
 
 .logo-placeholder {
@@ -171,11 +203,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.logo-placeholder:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 @keyframes scroll {
