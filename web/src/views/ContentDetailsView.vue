@@ -29,7 +29,7 @@
       </div>
 
       <div class="content-section">
-        <h2>Outgoing References</h2>
+        <h2>References:</h2>
         <div class="details-box">
           <ul v-if="references.length" class="ref-list">
             <li v-for="(ref, idx) in references" :key="idx" class="reference-card">
@@ -51,7 +51,7 @@
       </div>
 
       <div class="content-section">
-        <h2>Used By</h2>
+        <h2>Referenced By:</h2>
         <div class="details-box">
           <ul v-if="usedBy.length" class="ref-list">
             <li v-for="(item, idx) in usedBy" :key="idx" class="reference-card">

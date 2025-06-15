@@ -1,39 +1,17 @@
 <template>
   <div class="verification">
     <h1>Content Verification</h1>
-    <p class="subtitle">Register and verify the provenance of your digital content.</p>
+    <p class="subtitle">Verify the C2PA Metadata of your digital content.</p>
 
-    <!-- User Info (simulated) -->
-    <div class="user-info">
-      <div class="user-id-info">
-        Your User ID: 10716220852217595599
-      </div>
-      <div class="login-status">
-        Signed in with custom token.
-      </div>
-    </div>
-
-    <!-- Register New Content -->
+    <!-- Upload Content File -->
     <div class="content-section">
-      <h2>Register New Content</h2>
+      <h2>Upload Content File (Image/Video/PDF)</h2>
       <div class="form-row">
         <div class="form-group">
           <label>
-            Upload Content File (Image/Video/PDF)
             <span class="help-text">Max size: Images 50MB, Videos 100MB, PDFs 20MB</span>
           </label>
           <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*,video/*,application/pdf" />
-        </div>
-        <div class="form-group">
-          <label>
-            Public Identifier
-            <span class="help-text">3-50 characters, letters, numbers, hyphens only</span>
-          </label>
-          <input type="text" v-model="publicIdentifier" @input="validatePublicIdentifier" placeholder="my-content-id"
-            maxlength="50" />
-          <div v-if="publicIdentifierError" class="error-text">
-            {{ publicIdentifierError }}
-          </div>
         </div>
       </div>
     </div>
@@ -198,35 +176,6 @@
     <button @click="registerContent" :disabled="!canRegister" class="register-btn">
       {{ getButtonText() }}
     </button>
-
-    <!-- View Registered Content -->
-    <div class="content-section">
-      <h2>View Registered Content</h2>
-      <input type="text" placeholder="Search by hash, ID, or file name..." class="search-input" />
-      <div class="table-container">
-        <table class="content-table">
-          <thead>
-            <tr>
-              <th>PUBLIC ID</th>
-              <th>HASH (PARTIAL)</th>
-              <th>CREATOR ID</th>
-              <th>REGISTERED ON</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="registeredContent">
-              <td>{{ registeredContent.publicId }}</td>
-              <td>{{ registeredContent.hash.slice(0, 12) + '...' }}</td>
-              <td>{{ registeredContent.creatorId }}</td>
-              <td>{{ registeredContent.registeredOn }}</td>
-            </tr>
-            <tr v-else>
-              <td colspan="4" class="no-content">No registered content yet.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -838,10 +787,8 @@ export default defineComponent({
     const getButtonText = (): string => {
       if (isProcessing.value) return processingMessage.value
       if (errors.value.length > 0) return 'Fix errors to continue'
-      if (!publicIdentifier.value) return 'Enter public identifier'
       if (!contentHash.value) return 'Upload a file first'
-      if (publicIdentifierError.value) return 'Fix identifier to continue'
-      return 'Register Content'
+      return 'Input C2PA metadata into the registry'
     }
 
     return {
